@@ -26,11 +26,12 @@ Two free neon browser games for mobile and desktop. In PULSE GRID, clear falling
 ## Partnership options (quotes, not completed purchases)
 - **14-day, single-domain nonexclusive pilot:** from **USD $9**, written agreement and start date required.
 - **Single-domain nonexclusive commercial placement:** from **USD $49**, terms agreed before payment.
+- **Editable HTML5 source-code license (one game):** from **USD $35**, nonexclusive, scope and lawful rights agreed in writing. Choose PULSE GRID or PULSE ORBIT; this is not a sale of the GitHub repository, developer accounts, unrelated content or exclusive ownership. AI-assisted development and previous public availability are disclosed.
 - **Small branded edition:** from **USD $149**, delivery, assets, scope and timing quoted individually.
 - **Inquiries:** https://pulse-grid-arcade.onrender.com/license-order.html
 - **Publisher information:** https://pulse-grid-arcade.onrender.com/partners.html
 
-The current site collects quote requests through an email-client link; it does not submit orders to a database, perform automated checkout, or grant a license by itself. A verified payment request and confirmed written terms are required for a paid license.
+The current site collects quote requests through an email-client link; it does not submit orders to a database, perform automated checkout, or grant a license by itself. A verified payment request and confirmed written terms are required for a paid license. Public ZIPs are evaluation copies, not evidence of a signed license or source transfer. Never provide account access or accept a purported escrow-verification charge. The buyer receives only the agreed title-specific rights and files after payment is verified in the developer's own payment account.
 
 ## Voluntary support
 - Players may optionally support development via the user's public PayPal.Me link: https://paypal.me/DANEFFRIMK/1USD
