@@ -14,7 +14,8 @@
 <div class="layout">
 <form class="panel" id="order">
 <h2 style="margin-top:0">1. Choose an option</h2>
-<label class="option"><input type="radio" name="offer" value="standard" checked><strong>Single-domain placement license</strong><span class="pill">From $49</span><small>Nonexclusive use on one named website or domain. Standalone browser build and license terms agreed before payment.</small></label>
+<label class="option"><input type="radio" name="offer" value="pilot" checked><strong>14-day single-domain pilot</strong><span class="pill">From $9</span><small>One-time, nonexclusive 14-day trial for one agreed domain. No automatic renewal, branding or integration. Terms confirmed before payment.</small></label>
+<label class="option"><input type="radio" name="offer" value="standard"><strong>Single-domain placement license</strong><span class="pill">From $49</span><small>Nonexclusive use on one named website or domain. Standalone browser build and license terms agreed before payment.</small></label>
 <label class="option"><input type="radio" name="offer" value="branded"><strong>Branded game edition</strong><span class="pill">From $149</span><small>A custom color palette, logo and copy for a specified campaign; scope and delivery quoted individually.</small></label>
 <label class="option"><input type="radio" name="offer" value="sponsored"><strong>Sponsored challenge</strong><span class="pill">Custom quote</span><small>Clearly identified sponsorship of a challenge or game landing page. No pay-to-win advantages.</small></label>
 <h2>2. Tell us what you need</h2>
@@ -26,7 +27,7 @@
 <p class="small">The email option opens your mail application with the request pre-filled. You must send it there; nothing is automatically submitted or purchased. No card numbers, passwords or financial details are collected.</p>
 </form>
 <aside class="panel"><h2 style="margin-top:0">What you receive</h2>
-<div class="notice"><strong id="selected">Single-domain license — starting at $49</strong><p id="selectedDesc" style="margin-bottom:0">A defined, nonexclusive license for one agreed domain, with a deployable HTML5 game build and installation notes. Final rights and terms require written confirmation.</p></div>
+<div class="notice"><strong id="selected">14-day single-domain pilot — starting at $9</strong><p id="selectedDesc" style="margin-bottom:0">A nonexclusive 14-day trial of the standalone HTML5 game for one agreed website. No automatic renewal, branding or integration. Final terms require written confirmation.</p></div>
 <h2>How a purchase works</h2><ol class="steps"><li>Try the <a href="/">PULSE GRID demo</a> and <a href="/orbit.html">PULSE ORBIT</a>.</li><li>Send the prepared quote request.</li><li>Receive written scope, licensing terms and the verified invoice or payment link.</li><li>Pay securely through the agreed external provider.</li><li>Receive the agreed digital files, installation notes and written license after successful payment.</li></ol>
 <div class="detail"><strong>Before payment</strong><p class="small">No commercial embedding, redistribution or advertising rights are granted solely by downloading the free review builds. No source-code ownership or exclusivity is implied.</p></div>
 <div class="detail"><strong>Review the files first</strong><p><a href="/downloads/pulse-grid-review.zip">PULSE GRID review ZIP</a></p><p><a href="/downloads/pulse-orbit-review.zip">PULSE ORBIT review ZIP</a></p><p class="small">These review copies are not paid licenses.</p></div>
@@ -36,6 +37,7 @@
 <script>
 (function(){
  const choices={
+  pilot:['14-day single-domain pilot — starting at $9','A nonexclusive 14-day trial of the standalone HTML5 game for one agreed domain. No automatic renewal, branding or integration. Final terms require written confirmation.','14-day single-domain pilot (from USD 9)'],
   standard:['Single-domain license — starting at $49','A defined, nonexclusive license for one agreed domain, with a deployable HTML5 game build and installation notes. Final rights and terms require written confirmation.','Single-domain placement license (from USD 49)'],
   branded:['Branded edition — starting at $149','A branded edition with campaign-specific colors, logo and copy. Exact custom work, timing and pricing require a written quote.','Branded game edition (from USD 149)'],
   sponsored:['Sponsored challenge — by quote','A clearly labeled promotion without gameplay advantages, based on a separately agreed campaign.','Sponsored challenge (price by quote)']
@@ -49,6 +51,7 @@
   const body='I would like a commercial quote for PULSE GRID.\n\nOffer: '+data[2]+'\nMy contact email: '+email+'\nWebsite / organization: '+site+'\nIntended use / questions: '+(notes||'Please contact me for details.')+'\n\nI understand this is an inquiry only. Price, deliverables, usage rights and a verified payment method must be agreed before payment.';
   return {subject:subject,body:body};
  }
+ const requestedOffer=new URLSearchParams(window.location.search).get('offer');if(choices[requestedOffer]){const target=form.querySelector('input[name=offer][value="'+requestedOffer+'"]');if(target)target.checked=true;}
  form.querySelectorAll('input[name=offer]').forEach(function(radio){radio.addEventListener('change',update);});update();
  form.addEventListener('submit',function(e){e.preventDefault();if(!form.reportValidity())return;const msg=build();assist.textContent='Opening your email app. Please send the message there to submit your request.';window.location.href='mailto:efrimaidan2@gmail.com?subject='+encodeURIComponent(msg.subject)+'&body='+encodeURIComponent(msg.body);});
  document.getElementById('copy').addEventListener('click',async function(){if(!form.reportValidity())return;const msg=build();const content='To: efrimaidan2@gmail.com\nSubject: '+msg.subject+'\n\n'+msg.body;try{await navigator.clipboard.writeText(content);assist.textContent='Copied. Paste into an email and send it to submit your request.';}catch(e){assist.textContent='Copy unavailable in this browser; use the email button instead.';}});
