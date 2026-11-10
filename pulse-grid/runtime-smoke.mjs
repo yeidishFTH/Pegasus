@@ -33,6 +33,9 @@ function createBrowser(file) {
       remove() {},
       getContext() { return ctx; },
       addEventListener() {},
+      setAttribute(name, value) { (this.attributes ??= {})[name] = String(value); },
+      getAttribute(name) { return this.attributes?.[name] ?? null; },
+      removeAttribute(name) { if(this.attributes) delete this.attributes[name]; },
       setPointerCapture() {}
     });
     return elements.get(id);
