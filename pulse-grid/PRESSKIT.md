@@ -1,21 +1,51 @@
-# PULSE GRID — Free neon falling-block puzzle
+# PULSE ARCADE — PULSE GRID & PULSE ORBIT
 
-**Play in browser:** https://pulse-grid-arcade.onrender.com/
+## Public games (free, no sign-up)
+- **PULSE GRID:** https://pulse-grid-arcade.onrender.com/
+- **PULSE ORBIT:** https://pulse-grid-arcade.onrender.com/orbit.html
+- **Game selection:** https://pulse-grid-arcade.onrender.com/arcade.html
 
-**Short pitch:** Clear lines, chase a new high score, and challenge a friend in a fast neon arcade puzzle that works on desktop and mobile. No download or sign-up.
+## Short pitch
+Two free neon browser games for mobile and desktop. In PULSE GRID, clear falling-block lines and challenge a friend to beat your score. In PULSE ORBIT, shift orbital lanes, dodge hazards and collect stars. No downloads, mandatory payments or accounts.
 
-**Long description:** PULSE GRID is an original lightweight browser-based falling-block puzzle built around quick sessions. Rotate and position colorful pieces, clear horizontal lines, raise your score and try to beat your own best. Each day a repeatable seed gives players an additional challenge. When you finish a session, share your score with friends; they get a playable link and the number to beat. It runs in a modern browser with touch and keyboard controls, without an account, external wallet or install. Progress and high scores are saved only in that browser. PULSE GRID is currently **free to play**, with **no payment checkout or paid edition available**.
+## PULSE GRID
+- **Genre:** Falling-block puzzle / arcade / casual
+- **Gameplay:** Plan placements, rotate pieces, clear rows, raise your score. Optional seeded daily challenge and shareable score links.
+- **Desktop:** ← / → move, ↑ rotate, ↓ soft drop, Space hard drop, C hold, P pause.
+- **Mobile:** On-screen controls and board gestures.
+- **Shareable 2,000-point goal:** https://pulse-grid-arcade.onrender.com/?goal=2000&src=invite
+- **Cover art:** https://pulse-grid-arcade.onrender.com/cover.png
+- **Preview files for publisher evaluation:** https://pulse-grid-arcade.onrender.com/downloads/pulse-grid-review.zip
 
-**Genre:** Casual / Puzzle / Arcade (single player)
+## PULSE ORBIT
+- **Genre:** One-thumb orbital survival / action
+- **Gameplay:** Switch between three orbital lanes, avoid plasma obstacles, collect energy stars, survive longer and share your score.
+- **Controls:** On-screen lane buttons or left/right keys; P to pause.
+- **Preview files for publisher evaluation:** https://pulse-grid-arcade.onrender.com/downloads/pulse-orbit-review.zip
 
-**Controls:** Desktop arrow keys (left/right, rotate up, soft drop down), space to hard drop, C to hold, P to pause. Mobile: on-screen buttons and touch gestures.
+## Partnership options (quotes, not completed purchases)
+- **14-day, single-domain nonexclusive pilot:** from **USD $9**, written agreement and start date required.
+- **Single-domain nonexclusive commercial placement:** from **USD $49**, terms agreed before payment.
+- **Small branded edition:** from **USD $149**, delivery, assets, scope and timing quoted individually.
+- **Inquiries:** https://pulse-grid-arcade.onrender.com/license-order.html
+- **Publisher information:** https://pulse-grid-arcade.onrender.com/partners.html
 
-**Cover art:** https://pulse-grid-arcade.onrender.com/cover.png (1200 × 630)
+The current site collects quote requests through an email-client link; it does not submit orders to a database, perform automated checkout, or grant a license by itself. A verified payment request and confirmed written terms are required for a paid license.
 
-**Technical:** Self-contained HTML5/Canvas game; no login or server game state required.
+## Voluntary support
+- Players may optionally support development via the user's public PayPal.Me link: https://paypal.me/DANEFFRIMK/1USD
+- The games remain free. Support does **not** include items, paid upgrades, gameplay advantages, an ad-free tier, charitable deductions or commercial rights.
+- Payments are processed by PayPal, which may charge applicable fees. We cannot confirm individual payments without an authenticated transaction record.
 
-**SEO title:** PULSE GRID — Free Neon Falling Block Puzzle Game Online
+## Platform and distribution
+- Client: HTML5 Canvas / JavaScript, mobile and desktop browsers.
+- No account, game-state server, mandatory in-game ads or paid downloads.
+- Local personal bests are optional and stored on the player's device; browser privacy restrictions may block storage without stopping play.
+- Hosted public version contains external navigation, social share and optional PayPal support. A publisher-specific build may need links stripped and its own platform SDK added under agreed terms.
+- Editorial links to the existing public game are welcome; mirroring, commercial embedding or redistributing files requires explicit permission and a written agreement.
 
-**Suggested social copy:** Think your reflexes are faster than mine? ⚡ I made PULSE GRID, a free neon block puzzle with quick rounds and a daily challenge. No install, no account. Play here: https://pulse-grid-arcade.onrender.com/
+## Accurate status
+Publicly playable on 2026-11-10. Do **not** infer verified user counts, distributor acceptance, revenue, sales, conversion rates or PayPal receipts from a deployed website or a scheduled social post.
 
-**Current release:** 2026-11-10. Free and public. No verified traffic or purchase claims.
+## Suggested social copy
+⚡ Think you can reach 2,000? Try PULSE GRID, a free neon block puzzle in your browser. No download or account. Play, clear lines and challenge a friend: https://pulse-grid-arcade.onrender.com/?goal=2000&src=invite
