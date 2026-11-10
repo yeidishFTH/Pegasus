@@ -56,6 +56,10 @@ assert.match(partners,/license-order\.html/,'licensing page must lead to order i
 assert.match(order,/mailto:efrimaidan2@gmail\.com/,'order request needs a functional email handoff');
 assert.match(order,/paypal\.me\/DANEFFRIMK\/9USD/,'approved USD 9 pilot needs an explicit payment destination');
 assert.match(order,/written confirmation/i,'do not imply rights without terms');
+assert.match(order,/value="source"/,'developer source-code inquiry option exists');
+assert.match(order,/source:\[/,'developer source-code selection must populate the quote');
+assert.match(partners,/license-order\.html\?offer=source/,'partner offer must lead to canonical source-code quote');
+assert.match(partners,/AI-assisted/,'disclose source provenance and rights constraints');
 assert.match(home,/paypal\.me\/DANEFFRIMK\/1USD/,'free game must show voluntary payment only');
 assert.ok(!/premium features included|pay.to.win bonus/i.test(home),'no paid advantage claims');
 const sitemap=fs.readFileSync('pulse-grid/sitemap.xml','utf8');
