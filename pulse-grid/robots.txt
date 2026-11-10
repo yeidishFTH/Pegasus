@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pulse-grid-arcade.onrender.com/sitemap.xml

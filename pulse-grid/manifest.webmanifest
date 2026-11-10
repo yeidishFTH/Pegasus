@@ -1,0 +1,19 @@
+{
+  "name": "PULSE GRID — Neon Block Puzzle",
+  "short_name": "PULSE GRID",
+  "description": "A fast, free falling-block puzzle with daily challenges.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08091b",
+  "theme_color": "#08091b",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
