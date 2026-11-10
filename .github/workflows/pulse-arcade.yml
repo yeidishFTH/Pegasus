@@ -1,0 +1,19 @@
+name: PULSE ARCADE smoke
+on:
+  push:
+    branches: [hypergrid-commercial]
+    paths:
+      - 'pulse-grid/**'
+      - '.github/workflows/pulse-arcade.yml'
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify browser game scripts, assets and site structure
+        run: node pulse-grid/check.mjs
