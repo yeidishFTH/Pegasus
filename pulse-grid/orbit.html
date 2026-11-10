@@ -17,8 +17,11 @@
 <footer>FREE TO PLAY · NO IN-GAME PURCHASES · <a class="link" href="/partners.html">LICENSE OUR GAMES</a><br><a class="link" href="https://paypal.me/DANEFFRIMK/1USD" target="_blank" rel="noopener noreferrer">OPTIONAL $1 SUPPORT VIA PAYPAL</a><br><small>Voluntary support only. No items, premium access, commercial rights or charity deduction.</small></footer></div>
 <script>
 'use strict';
+// Optional local scores should never prevent gameplay if storage is blocked.
+function storageGet(key){try{return window.localStorage.getItem(key)}catch(e){return null}}
+function storageSet(key,value){try{window.localStorage.setItem(key,String(value))}catch(e){}}
 const cv=document.getElementById('canvas'),g=cv.getContext('2d'),$=id=>document.getElementById(id),M=Math.PI*2,orbit=[144,216,294],Cx=360,Cy=438;
-let state='ready',dailyMode=false,rngSeed=0,seeded=0,angle=-Math.PI/2,lane=1,life=3,points=0,best=Number(localStorage.getItem('pulse-orbit-best')||0),elapsed=0,spawnT=1.6,starT=2.4,inv=0,shift=0,shake=0,last=0,raf=0,obstacles=[],tokens=[],particles=[],trail=[],stars=[];
+let state='ready',dailyMode=false,rngSeed=0,seeded=0,angle=-Math.PI/2,lane=1,life=3,points=0,best=Number(storageGet('pulse-orbit-best')||0),elapsed=0,spawnT=1.6,starT=2.4,inv=0,shift=0,shake=0,last=0,raf=0,obstacles=[],tokens=[],particles=[],trail=[],stars=[];
 $('best').textContent=best;
 let seed=46832;function rand(){if(dailyMode){rngSeed=(Math.imul(1664525,rngSeed)+1013904223)>>>0;return rngSeed/4294967296}seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296}
 function noiseStars(){stars=[];for(let i=0;i<110;i++)stars.push({x:rand()*720,y:rand()*900,r:.8+rand()*2.0,a:.2+rand()*.8,s:rand()*M})}noiseStars();
@@ -27,7 +30,7 @@ function diff(a,b){return Math.atan2(Math.sin(a-b),Math.cos(a-b))}
 function stats(){$('score').textContent=Math.floor(points).toLocaleString();$('best').textContent=best.toLocaleString();$('life').textContent='♥ '.repeat(life).trim()||'—'}
 function showOverlay(title,sub,button){$('title').innerHTML=title;$('description').textContent=sub;$('start').textContent=button;$('overlay').hidden=false}
 function start(daily=dailyMode){dailyMode=daily;rngSeed=Number(new Date().toISOString().slice(0,10).replaceAll('-',''))>>>0;angle=-Math.PI/2;lane=1;life=3;elapsed=0;points=0;spawnT=1.6;starT=2.4;inv=.6;shift=0;shake=0;obstacles=[];tokens=[];particles=[];trail=[];state='play';last=performance.now();$('overlay').hidden=true;$('shareEnd').hidden=true;stats();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
-function end(){state='over';cancelAnimationFrame(raf);const n=Math.floor(points);if(n>best){best=n;try{localStorage.setItem('pulse-orbit-best',String(best))}catch(e){}}stats();showOverlay('GAME<br><span>OVER</span>','You survived '+elapsed.toFixed(1)+' seconds and scored '+n.toLocaleString()+'.','TRY AGAIN');$('shareEnd').hidden=false}
+function end(){state='over';cancelAnimationFrame(raf);const n=Math.floor(points);if(n>best){best=n;try{storageSet('pulse-orbit-best',String(best))}catch(e){}}stats();showOverlay('GAME<br><span>OVER</span>','You survived '+elapsed.toFixed(1)+' seconds and scored '+n.toLocaleString()+'.','TRY AGAIN');$('shareEnd').hidden=false}
 function pause(){if(state==='play'){state='pause';showOverlay('PAUSED','The cosmos can wait.','RESUME');$('shareEnd').hidden=true;cancelAnimationFrame(raf)}else if(state==='pause'){state='play';$('overlay').hidden=true;last=performance.now();raf=requestAnimationFrame(loop)}}
 function move(d){if(state!=='play')return;const dest=Math.max(0,Math.min(2,lane+d));if(dest===lane)return;lane=dest;inv=Math.max(inv,.26);shift=.28;const pos=origin(angle,orbit[lane]);for(let i=0;i<12;i++)particle(pos.x,pos.y,'#81ffed',3,.45)}
 function particle(x,y,col,sp=2,t=1){particles.push({x,y,vx:(rand()-.5)*sp*95,vy:(rand()-.5)*sp*95,life:t,max:t,col,size:2+rand()*5})}
