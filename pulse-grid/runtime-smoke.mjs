@@ -28,6 +28,9 @@ function createBrowser(file) {
       id, hidden: false, textContent: '', innerHTML: '', className: '',
       style: {setProperty() {}}, offsetWidth: 5, clientWidth: 350,
       classList: {add() {}, remove() {}},
+      attributes: {},
+      setAttribute(name,value) { this.attributes[name] = String(value); },
+      getAttribute(name) { return this.attributes[name] ?? null; },
       children: [],
       appendChild(child) { this.children.push(child); },
       remove() {},
@@ -82,6 +85,15 @@ const firstDaily = Array.from(grid.evaluate('[cur.k,next.k]'));
 grid.evaluate('start(true)');
 const secondDaily = Array.from(grid.evaluate('[cur.k,next.k]'));
 assert.deepEqual(firstDaily, secondDaily, 'daily seed produces repeatable opening pieces');
+// The personal score target must reflect actual score and reset each new run.
+grid.evaluate('score = 500; update()');
+assert.equal(grid.element('goalPct').textContent, '25%', 'score progress matches earned points');
+assert.equal(grid.element('progressTrack').getAttribute('aria-valuenow'), '500', 'accessible progress reflects earned score');
+grid.evaluate('score = 2000; update()');
+assert.equal(grid.element('goalPct').textContent, '100%', 'score goal caps at 100%');
+assert.equal(grid.element('goalStatus').textContent, 'Goal reached! Keep playing if you want.', 'completed goal is voluntary');
+grid.evaluate('start(true)');
+assert.equal(grid.element('goalPct').textContent, '0%', 'new run clears score progress');
 grid.document.hidden = true;
 grid.listeners.get('visibilitychange')();
 assert.equal(grid.evaluate('paused'), true, 'PULSE GRID pauses when hidden');
