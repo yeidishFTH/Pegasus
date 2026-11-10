@@ -17,3 +17,5 @@ jobs:
           node-version: '22'
       - name: Verify browser game scripts, assets and site structure
         run: node pulse-grid/check.mjs
+      - name: Verify publisher review ZIP integrity and runnable scripts
+        run: python3 pulse-grid/verify_packs.py
