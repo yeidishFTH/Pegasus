@@ -47,9 +47,40 @@ try {
     assert.equal(response.status(),200,mode.name+' index failed');
     await page.waitForFunction(()=>window.__qa?.messages.includes('game_ready'),{timeout:15000});
     assert.equal(await page.locator('#start').count(),1);
+    // Release gate: every compressed sound must be present locally in the ZIP.
+    // Read content through the same HTTP server used by Chromium; no external audio.
+    const assets=await page.evaluate(async()=>{
+      const tracks=['bong_001','click_002','confirmation_001','error_004','maximize_003','minimize_004','music-loop'];
+      return Promise.all(tracks.flatMap(t=>['ogg','mp3'].map(ext=>'/audio/'+t+'.'+ext)).map(async path=>{
+        const response=await fetch(path);
+        return {path,status:response.status,size:(await response.arrayBuffer()).byteLength};
+      })));
+    });
+    assert.equal(assets.length,14);
+    assert.ok(assets.every(a=>a.status===200&&a.size>256),mode.name+' missing sound asset: '+JSON.stringify(assets));
+    assert.equal(await page.locator('#soundToggle').getAttribute('aria-pressed'),'false','sound must default OFF');
     assert.equal(await page.locator('#overlay').isVisible(),true);
     await page.locator('#start').click();
     await page.waitForFunction(()=>document.getElementById('overlay').hidden);
+    // Audio is opt-in. Verify that the host can mute it during platform events
+    // and that the player can turn it back off without leaving audio playing.
+    await page.locator('#soundToggle').click();
+    assert.equal(await page.locator('#soundToggle').getAttribute('aria-pressed'),'true');
+    await page.waitForFunction(()=>typeof musicTrack!=='undefined'&&musicTrack!==null);
+    const audioInfo=await page.evaluate(()=>({
+      cueCount:soundPlayers.size,
+      local:[musicTrack,...soundPlayers.values()].every(a=>new URL(a.src).origin===location.origin),
+      formats:[musicTrack,...soundPlayers.values()].map(a=>new URL(a.src).pathname.split('.').pop())
+    }));
+    assert.equal(audioInfo.cueCount,6);
+    assert.equal(audioInfo.local,true,'audio URL leaked to external origin');
+    assert.ok(audioInfo.formats.every(ext=>ext==='ogg'||ext==='mp3'));
+    await page.evaluate(()=>window.__qa.events.host_audio(false));
+    assert.equal(await page.evaluate(()=>[musicTrack,...soundPlayers.values()].every(a=>a.paused)),true,'host mute must pause all game audio');
+    await page.evaluate(()=>window.__qa.events.host_audio(true));
+    await page.locator('#soundToggle').click();
+    assert.equal(await page.locator('#soundToggle').getAttribute('aria-pressed'),'false','player mute failed');
+    assert.equal(await page.evaluate(()=>[musicTrack,...soundPlayers.values()].every(a=>a.paused)),true,'player mute must pause all game audio');
     const started=await page.evaluate(()=>window.__qa.messages.includes('level_started'));
     assert.equal(started,true,'start lifecycle absent');
     if(mode.isMobile) {
