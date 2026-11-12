@@ -24,14 +24,19 @@ const soundTracks={
  hold:'./audio/minimize_004.ogg',start:'./audio/confirmation_001.ogg',
  clear:'./audio/maximize_003.ogg',end:'./audio/error_004.ogg'
 };
+function selectAudio(url){
+ const probe=document.createElement('audio');
+ const ogg=probe.canPlayType && probe.canPlayType('audio/ogg; codecs="vorbis"');
+ return ogg ? url : url.replace(/\.ogg$/, '.mp3');
+}
 const soundPlayers=new Map();
 function prepareAudio(){
  if(musicTrack)return;
  for(const [cue,url] of Object.entries(soundTracks)){
-  const a=new Audio(url);a.preload='auto';a.volume=cue==='land' ? 0.16 : 0.23;
+  const a=new Audio(selectAudio(url));a.preload='auto';a.volume=cue==='land' ? 0.16 : 0.23;
   soundPlayers.set(cue,a);
  }
- musicTrack=new Audio('./audio/music-loop.ogg');
+ musicTrack=new Audio(selectAudio('./audio/music-loop.ogg'));
  musicTrack.preload='auto';musicTrack.loop=true;musicTrack.volume=0.12;
 }
 function audioMayPlay(){return soundEnabled&&window.__PULSE_PG_AUDIO_ALLOWED&&!document.hidden}
