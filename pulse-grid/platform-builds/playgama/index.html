@@ -7,7 +7,8 @@
     document.documentElement.dataset.platformLanguage=hostLanguage;
     document.documentElement.lang='en'; // This game currently offers English only.
     const keys=['pulsegrid-best','pulsegrid-daily-'+new Date().toISOString().slice(0,10)];
-    const values=await bridge.storage.get(keys);
+    // Let players reach the game if host storage is temporarily unavailable; do not use browser-local persistence.
+    let values=[];try{values=await bridge.storage.get(keys)}catch(_storageErr){values=[];}
     window.__PULSE_PG_SAVED={};
     keys.forEach((key,i)=>window.__PULSE_PG_SAVED[key]=values?.[i]??null);
     function mount(){const s=document.createElement('script');s.src='./game.js';document.body.appendChild(s)}
