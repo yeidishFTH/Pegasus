@@ -54,7 +54,7 @@ try {
       return Promise.all(tracks.flatMap(t=>['ogg','mp3'].map(ext=>'/audio/'+t+'.'+ext)).map(async path=>{
         const response=await fetch(path);
         return {path,status:response.status,size:(await response.arrayBuffer()).byteLength};
-      })));
+      }));
     });
     assert.equal(assets.length,14);
     assert.ok(assets.every(a=>a.status===200&&a.size>256),mode.name+' missing sound asset: '+JSON.stringify(assets));
