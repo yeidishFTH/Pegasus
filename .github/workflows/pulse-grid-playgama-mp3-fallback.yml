@@ -1,0 +1,83 @@
+name: PULSE GRID Playgama legacy-audio fallback (isolated)
+on:
+  push:
+    branches:
+      - pulse-grid-playgama-staging-20261111
+    paths:
+      - .github/workflows/pulse-grid-playgama-mp3-fallback.yml
+permissions:
+  contents: write
+jobs:
+  build-mp3-fallback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Convert bundled CC0 OGG clips to MP3 for older Safari
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          dir="pulse-grid/platform-builds/playgama/audio"
+          shopt -s nullglob
+          tracks=("$dir"/*.ogg)
+          test "${#tracks[@]}" -eq 7
+          for source in "${tracks[@]}"; do
+            ffmpeg -hide_banner -loglevel error -nostdin -y -i "$source" -vn -codec:a libmp3lame -q:a 5 "${source%.ogg}.mp3"
+            ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1 "${source%.ogg}.mp3" | grep -qx codec_name=mp3
+          done
+      - name: Select supported codec at runtime without external requests
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('pulse-grid/platform-builds/playgama/game.js')
+          s=p.read_text(encoding='utf-8')
+          if 'function selectAudio(url)' not in s:
+              anchor='const soundPlayers=new Map();'
+              assert s.count(anchor)==1, 'Source unexpectedly changed: abort without patch'
+              repl="""function selectAudio(url){
+           const probe=document.createElement('audio');
+           const ogg=probe.canPlayType && probe.canPlayType('audio/ogg; codecs="vorbis"');
+           return ogg ? url : url.replace(/\\.ogg$/, '.mp3');
+          }
+          const soundPlayers=new Map();"""
+              s=s.replace(anchor,repl)
+              old_effect='const a=new Audio(url);a.preload='
+              assert s.count(old_effect)==1, 'Sound instantiation changed: abort'
+              s=s.replace(old_effect,'const a=new Audio(selectAudio(url));a.preload=')
+              old_music="musicTrack=new Audio('./audio/music-loop.ogg');"
+              assert s.count(old_music)==1, 'Music instantiation changed: abort'
+              s=s.replace(old_music,"musicTrack=new Audio(selectAudio('./audio/music-loop.ogg'));")
+              p.write_text(s,encoding='utf-8')
+          else:
+              assert "new Audio(selectAudio(url))" in s
+              assert "new Audio(selectAudio('./audio/music-loop.ogg'))" in s
+          PY
+      - name: Validate full audio inventory and JavaScript
+        run: |
+          set -euo pipefail
+          node --check pulse-grid/platform-builds/playgama/game.js
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('pulse-grid/platform-builds/playgama/audio')
+          ogg=sorted(root.glob('*.ogg'))
+          mp3=sorted(root.glob('*.mp3'))
+          assert len(ogg)==7 and len(mp3)==7
+          assert [p.stem for p in ogg]==[p.stem for p in mp3]
+          assert all(p.stat().st_size>512 for p in mp3)
+          s=Path('pulse-grid/platform-builds/playgama/game.js').read_text()
+          assert "selectAudio(url)" in s and ".replace(/\\.ogg$/, '.mp3')" in s
+          print('PASS: 7 paired CC0 OGG+MP3 recordings, runtime codec fallback, JS syntax')
+          PY
+      - name: Commit generated MP3 fallback to isolated branch only
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "pulse-grid-playgama-staging-20261111"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pulse-grid/platform-builds/playgama/game.js pulse-grid/platform-builds/playgama/audio/*.mp3
+          if ! git diff --cached --quiet; then
+            git commit -m "Playgama staging: add MP3 compatibility fallback for older Safari"
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
