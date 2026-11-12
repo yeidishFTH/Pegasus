@@ -1,0 +1,29 @@
+name: PULSE Playgama isolated browser QA
+on:
+  push:
+    branches:
+      - pulse-grid-playgama-staging-20261111
+    paths:
+      - 'pulse-grid/platform-builds/playgama/**'
+      - '.github/workflows/pulse-playgama-browser-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate game JavaScript syntax
+        run: |
+          node --check pulse-grid/platform-builds/playgama/game.js
+          node --check pulse-grid/platform-builds/playgama/qa-browser.mjs
+      - name: Install only browser automation library
+        working-directory: pulse-grid/platform-builds/playgama
+        run: npm install --no-save --no-package-lock --ignore-scripts playwright-core@1.57.0
+      - name: Run Chrome browser smoke (SDK stubbed, no submission)
+        run: node pulse-grid/platform-builds/playgama/qa-browser.mjs
