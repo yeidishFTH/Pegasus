@@ -27,3 +27,12 @@ jobs:
         run: npm install --no-save --no-package-lock --ignore-scripts playwright-core@1.57.0
       - name: Run Chrome browser smoke (SDK stubbed, no submission)
         run: node pulse-grid/platform-builds/playgama/qa-browser.mjs
+      - name: Package validated standalone Playgama review ZIP
+        run: python3 pulse-grid/platform-builds/playgama/package-review.py
+      - name: Save review ZIP as temporary QA artifact (not published)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PULSE_GRID_Playgama_review_not_submitted
+          path: pulse-grid/platform-builds/playgama/dist/PULSE_GRID_Playgama_review.zip
+          if-no-files-found: error
+          retention-days: 3
