@@ -107,21 +107,27 @@ function paint(){cx.fillStyle='#0b1026';cx.fillRect(0,0,320,640);cx.lineWidth=1;
 function paintNext(){nx.clearRect(0,0,120,110);if(!next)return;const m=next.m,s=26,offx=(120-m[0].length*s)/2,offy=(110-m.length*s)/2;m.forEach((r,y)=>r.forEach((v,x)=>{if(v)square(nx,offx+x*s,offy+y*s,s,next.k)}))}
 function overlay(title,desc,button){$('overTitle').textContent=title;$('overDesc').textContent=desc;$('start').textContent=button;$('overlay').hidden=false}
 function end(){active=false;cancelAnimationFrame(raf);sendLifecycle('level_failed');if(score>best){best=score;storageSet('pulsegrid-best',best);$('best').textContent=best.toLocaleString()}if(dailyMode){const key='pulsegrid-daily-'+new Date().toISOString().slice(0,10);if(score>Number(storageGet(key)||0))storageSet(key,score)}overlay('GAME OVER','Score: '+score.toLocaleString()+' • '+lines+' lines','PLAY AGAIN');/* Distributor copy: off-platform buttons have no handlers and must stay hidden. */$('shareOverlay').hidden=true;$('supportOverlay').hidden=true;stopAudio();soundCue('end');try{if(bridge.advertisement.isInterstitialSupported)bridge.advertisement.showInterstitial('game_over')}catch(e){} }
-function start(mode=dailyMode){dailyMode=mode;seed=Number(new Date().toISOString().slice(0,10).replaceAll('-',''))>>>0;grid=Array.from({length:H},()=>Array(W).fill(-1));score=0;level=1;lines=0;goalAnnounced=false;$('challengeProgress').classList.remove('progress-complete');cur=null;next=null;stored=-1;heldUsed=false;bag=[];active=true;paused=false;last=performance.now();acc=0;$('held').textContent='EMPTY';$('overlay').hidden=true;$('shareOverlay').hidden=true;$('supportOverlay').hidden=true;update();newPiece();soundCue('start');resumeAudio();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);sendLifecycle('level_started')}
+function start(mode=dailyMode){if(platformPauseActive||document.hidden)return;autoPaused=false;dailyMode=mode;seed=Number(new Date().toISOString().slice(0,10).replaceAll('-',''))>>>0;grid=Array.from({length:H},()=>Array(W).fill(-1));score=0;level=1;lines=0;goalAnnounced=false;$('challengeProgress').classList.remove('progress-complete');cur=null;next=null;stored=-1;heldUsed=false;bag=[];active=true;paused=false;last=performance.now();acc=0;$('held').textContent='EMPTY';$('overlay').hidden=true;$('shareOverlay').hidden=true;$('supportOverlay').hidden=true;update();newPiece();soundCue('start');resumeAudio();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);sendLifecycle('level_started')}
 function loop(t){const delta=Math.min(t-last,100);last=t;if(active&&!paused){acc+=delta;if(acc>Math.max(85,850*Math.pow(.84,level-1))){step();acc=0}}paint();if(active)raf=requestAnimationFrame(loop)}
-function pause(){if(!active)return;paused=!paused;if(paused)stopAudio();else resumeAudio();sendLifecycle(paused?'level_paused':'level_resumed');if(paused){cancelAnimationFrame(raf);overlay('PAUSED','Keep your focus. Resume when ready.','RESUME');$('shareOverlay').hidden=true;$('supportOverlay').hidden=true}else{$('overlay').hidden=true;last=performance.now();raf=requestAnimationFrame(loop)}}
+function pause(){if(!active)return;if(paused&&(platformPauseActive||document.hidden))return;paused=!paused;if(!paused)autoPaused=false;if(paused)stopAudio();else resumeAudio();sendLifecycle(paused?'level_paused':'level_resumed');if(paused){cancelAnimationFrame(raf);overlay('PAUSED','Keep your focus. Resume when ready.','RESUME');$('shareOverlay').hidden=true;$('supportOverlay').hidden=true}else{$('overlay').hidden=true;last=performance.now();raf=requestAnimationFrame(loop)}}
 function flash(msg){$('toast').textContent=msg;clearTimeout(flash.t);flash.t=setTimeout(()=>$('toast').textContent='',1000)}
 $('start').onclick=()=>paused?pause():start();$('dailyStart').onclick=()=>start(true);$('hold').onclick=hold;$('pause').onclick=pause;$('soundToggle').onclick=toggleSound;$('left').onclick=()=>{move(-1);paint()};$('right').onclick=()=>{move(1);paint()};$('rot').onclick=()=>{rotate();paint()};$('drop').onclick=()=>{drop();paint()};
-// Do not silently lose a run when players switch apps or take a call.
-document.addEventListener('visibilitychange',()=>{if(document.hidden){stopAudio();if(active&&!paused)pause()}else if(active&&!paused)resumeAudio()});
+// Pause only the active run when the app is backgrounded. Restore automatic pauses on return,
+// but respect an explicit player pause and a simultaneous host pause (e.g. an advertisement).
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){stopAudio();if(active&&!paused){autoPaused=true;pause()}}
+ else if(autoPaused&&!platformPauseActive&&active&&paused)pause();
+ else if(active&&!paused)resumeAudio();
+});
 document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Space'].includes(e.code))e.preventDefault();if(e.repeat&&['Space','KeyC','KeyP','ArrowUp'].includes(e.code))return;switch(e.code){case'ArrowLeft':case'KeyA':move(-1);break;case'ArrowRight':case'KeyD':move(1);break;case'ArrowUp':case'KeyW':rotate();break;case'ArrowDown':case'KeyS':soft();break;case'Space':drop();break;case'KeyC':hold();break;case'KeyP':pause();break}paint()});
 let startX=0,startY=0;cv.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY},{passive:true});cv.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY;if(Math.abs(dx)>35&&Math.abs(dx)>Math.abs(dy)){move(dx>0?1:-1)}else if(dy>45){drop()}else rotate();paint()},{passive:true});
 
 window.__PULSE_PG_AUDIO_ALLOWED=bridge.platform.isAudioEnabled!==false;
-let platformForcedPause=false;
+let platformPauseActive=false,autoPaused=false;
 bridge.platform.on(bridge.EVENT_NAME.PAUSE_STATE_CHANGED,function(hostPaused){
-  if(hostPaused&&active&&!paused){platformForcedPause=true;pause()}
-  else if(!hostPaused&&platformForcedPause){platformForcedPause=false;if(active&&paused)pause()}
+ platformPauseActive=hostPaused===true;
+ if(platformPauseActive){if(active&&!paused){autoPaused=true;pause()}}
+ else if(autoPaused&&!document.hidden&&active&&paused)pause();
 });
 bridge.platform.on(bridge.EVENT_NAME.AUDIO_STATE_CHANGED,function(allowed){
   window.__PULSE_PG_AUDIO_ALLOWED=allowed!==false;
