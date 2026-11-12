@@ -28,8 +28,8 @@ jobs:
         run: npm install --no-save --no-package-lock --ignore-scripts playwright-core@1.57.0
       - name: Run Chrome browser smoke (SDK stubbed, no submission)
         run: node pulse-grid/platform-builds/playgama/qa-browser.mjs
-      - name: Diagnose viewport and aspect ratio compliance (non-blocking review evidence)
-        run: node pulse-grid/platform-builds/playgama/viewport-audit.mjs
+      - name: Enforce no-scroll, board and controls fit at five viewport sizes
+        run: STRICT_LAYOUT=1 node pulse-grid/platform-builds/playgama/viewport-audit.mjs
       - name: Package validated standalone Playgama review ZIP
         run: python3 pulse-grid/platform-builds/playgama/package-review.py
       - name: Save review ZIP as temporary QA artifact (not published)
