@@ -40,7 +40,7 @@ def validate() -> None:
     cfg = json.loads((HERE / "playgama-bridge-config.json").read_text(encoding="utf-8"))
     if not isinstance(cfg, dict) or "advertisement" not in cfg:
         raise ValueError("Missing Playgama advertising configuration")
-    if not re.search(r"<script\\s+src=[\\\"']https://bridge\\.playgama\\.com/", html):
+    if '<script src="https://bridge.playgama.com/' not in html:
         raise ValueError("Playgama Bridge must load before gameplay")
     if not all(token in html for token in ("bridge.initialize()", "game.js")):
         raise ValueError("Playgama bootstrap is incomplete")
@@ -55,9 +55,9 @@ def validate() -> None:
     for value in disallowed:
         if value.lower() in references.lower():
             raise ValueError(f"Distributor build references restricted resource: {value}")
-    urls = re.findall(r"https?://[^\\s\\\"'<>\\)]+", references)
-    if any(not url.startswith("https://bridge.playgama.com/") for url in urls):
-        raise ValueError(f"Unexpected external URL(s): {urls}")
+    unexpected_urls = references.replace('https://bridge.playgama.com/v2/stable/playgama-bridge.js', '')
+    if 'https://' in unexpected_urls or 'http://' in unexpected_urls:
+        raise ValueError("Distributor build references offsite URL(s)")
     if sum((HERE / name).stat().st_size for name in FILES) > MAX_SIZE:
         raise ValueError("Playgama archive exceeds the 300 MB size limit")
 
