@@ -1,4 +1,5 @@
 // Real Chromium UI smoke for the isolated Playgama build; host SDK is explicitly mocked.
+// The mock intentionally rejects game_ready to catch unhandled SDK promises without blocking free gameplay.
 // Run from repo root: npm install --no-save playwright-core@1.57.0 && node pulse-grid/platform-builds/playgama/qa-browser.mjs
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
@@ -26,7 +27,7 @@ window.__qa={messages:[],events:{},writes:[]};
 window.bridge={
  initialize:async()=>true,
  EVENT_NAME:{PAUSE_STATE_CHANGED:'host_pause', AUDIO_STATE_CHANGED:'host_audio'},
- platform:{language:'en',isAudioEnabled:true,sendMessage:function(s){window.__qa.messages.push(s);return Promise.resolve()},on:function(evt,handler){window.__qa.events[evt]=handler}},
+ platform:{language:'en',isAudioEnabled:true,sendMessage:function(s){window.__qa.messages.push(s);return s==='game_ready' ? Promise.reject(new Error('QA-only host readiness rejection')) : Promise.resolve()},on:function(evt,handler){window.__qa.events[evt]=handler}},
  storage:{get:async keys=>keys.map(()=>null),set:async(keys,values)=>{window.__qa.writes.push({keys,values})}},
  advertisement:{isInterstitialSupported:false,showInterstitial:async()=>{}}
 };
