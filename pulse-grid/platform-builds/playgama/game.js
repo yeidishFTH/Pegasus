@@ -2,7 +2,7 @@
 // storage-restricted environments (no account or server-side storage).
 function storageGet(key){return window.__PULSE_PG_SAVED?.[key]??null}
 function sendLifecycle(event){try{Promise.resolve(bridge.platform.sendMessage(event)).catch(()=>{});}catch(e){}}
-function storageSet(key,value){window.__PULSE_PG_SAVED[key]=String(value);Promise.resolve(bridge.storage.set([key],[String(value)])).catch(()=>{})}
+function storageSet(key,value){window.__PULSE_PG_SAVED[key]=String(value);try{Promise.resolve(bridge.storage.set([key],[String(value)])).catch(()=>{});}catch(_storageErr){/* Host storage can fail transiently; gameplay must remain usable. */}}
 const W=10,H=20,C=32,cv=document.getElementById('board'),cx=cv.getContext('2d'),nc=document.getElementById('next'),nx=nc.getContext('2d');
 const shapes=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[0,1,1],[1,1,0]],[[1,1,0],[0,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]]];
 const palette=['#47e8f0','#fff181','#c78fff','#6df9ba','#ff789a','#76a8ff','#ffb46c'];let grid=[],cur=null,next=null,stored=-1,heldUsed=false,bag=[],score=0,lines=0,level=1,active=false,paused=false,dailyMode=false,seed=0,last=0,acc=0,raf=0,best=Number(storageGet('pulsegrid-best')||0);document.getElementById('best').textContent=best.toLocaleString();const $=id=>document.getElementById(id);
