@@ -23,13 +23,13 @@ await new Promise(resolve => server.listen(0, '127.0.0.1',resolve));
 const origin = 'http://127.0.0.1:' + server.address().port;
 const errors = [];
 const sdkMock = `
-window.__qa={messages:[],events:{},writes:[]};
+window.__qa={messages:[],events:{},writes:[],adPlacements:[]};
 window.bridge={
  initialize:async()=>true,
  EVENT_NAME:{PAUSE_STATE_CHANGED:'host_pause', AUDIO_STATE_CHANGED:'host_audio'},
  platform:{language:'en',isAudioEnabled:true,sendMessage:function(s){window.__qa.messages.push(s);return s==='game_ready' ? Promise.reject(new Error('QA-only host readiness rejection')) : Promise.resolve()},on:function(evt,handler){window.__qa.events[evt]=handler}},
  storage:{get:async keys=>keys.map(()=>null),set:async(keys,values)=>{window.__qa.writes.push({keys,values})}},
- advertisement:{isInterstitialSupported:false,showInterstitial:async()=>{}}
+ advertisement:{isInterstitialSupported:false,showInterstitial:async(placement)=>{window.__qa.adPlacements.push(placement);throw new Error('QA-only simulated ad no-fill');}}
 };
 `;
 let browser;
@@ -100,8 +100,20 @@ try {
     await page.waitForFunction(()=>document.getElementById('overTitle').textContent==='PAUSED');
     await page.evaluate(()=>window.__qa.events.host_pause(false));
     await page.waitForFunction(()=>document.getElementById('overlay').hidden);
+    // Revenue-share gate: request an interstitial only at game over when the
+    // host supports it. A rejected/no-fill ad must never trap the player.
+    const adSupported = mode.name === 'desktop';
+    await page.evaluate(supported => { bridge.advertisement.isInterstitialSupported = supported; }, adSupported);
+    await page.evaluate(() => end()); // Deterministically reach game over after a valid gameplay start.
+    await page.waitForFunction(() => document.getElementById('overTitle').textContent === 'GAME OVER');
+    const ads = await page.evaluate(() => window.__qa.adPlacements);
+    assert.deepEqual(ads, adSupported ? ['game_over'] : [], mode.name+' incorrect interstitial placement/support handling');
+    await page.locator('#start').click();
+    await page.waitForFunction(() => active && document.getElementById('overlay').hidden);
+    assert.equal(await page.evaluate(() => window.__qa.messages.filter(x => x === 'level_started').length), 2, 'no-fill ad blocked replay');
+    await page.waitForTimeout(50); // Give the simulated rejected Promise a turn to surface unhandled errors.
     assert.equal(errors.length,0,JSON.stringify(errors));
-    console.log('PASS '+mode.name+' load/play/score/manual pause/host pause/resume');
+    console.log('PASS '+mode.name+' load/play/score/pause/host events/game-over ad no-fill/replay');
     await context.close();
   }
   console.log('PASS all browser smoke tests (Playgama Bridge mocked; actual host integration still requires review)');
