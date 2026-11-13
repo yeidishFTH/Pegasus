@@ -36,9 +36,9 @@
 <label class="field" for="site">Website or organization *</label><input id="site" type="text" name="site" maxlength="200" placeholder="example.com or organization name" required>
 <div id="sourceTitleWrap" hidden><label class="field" for="sourceTitle">Choose the title to license *</label><select id="sourceTitle" name="sourceTitle" required disabled><option value="">Select one game</option><option value="PULSE GRID">PULSE GRID</option><option value="PULSE ORBIT">PULSE ORBIT</option></select></div>
 <label class="field" for="notes">Usage, requested branding or questions</label><textarea id="notes" name="notes" maxlength="1200" placeholder="Which domain? Target audience? What would you like to change?"></textarea>
-<div class="actions"><button class="button" type="submit">Prepare my quote request</button><button class="button secondary" type="button" id="copy">Copy request text</button></div>
+<div class="actions"><button class="button" type="submit">Open email app to send</button><button class="button secondary" type="button" id="gmail">Open Gmail draft</button><button class="button secondary" type="button" id="copy">Copy request text</button></div>
 <div class="assist" id="assist" role="status" aria-live="polite"></div>
-<p class="small">The email option opens your mail application with the request pre-filled. You must send it there; nothing is automatically submitted or purchased. No card numbers, passwords or financial details are collected.</p>
+<p class="small">Choose your email app, open a pre-filled draft in Gmail (Google account required), or copy the request. You must explicitly send the email yourself; nothing is automatically submitted, ordered or purchased. No card numbers, passwords or financial details are collected.</p>
 </form>
 <aside class="panel"><h2 style="margin-top:0">What you receive</h2>
 <div class="notice"><strong id="selected">14-day single-domain pilot — starting at $9</strong><p id="selectedDesc" style="margin-bottom:0">A nonexclusive 14-day trial of the standalone HTML5 game for one agreed website. No automatic renewal, branding or integration. Final terms require written confirmation.</p></div>
@@ -71,6 +71,7 @@
  const requestedOffer=new URLSearchParams(window.location.search).get('offer');if(choices[requestedOffer]){const target=form.querySelector('input[name=offer][value="'+requestedOffer+'"]');if(target)target.checked=true;}
  form.querySelectorAll('input[name=offer]').forEach(function(radio){radio.addEventListener('change',update);});update();
  form.addEventListener('submit',function(e){e.preventDefault();if(!form.reportValidity())return;const msg=build();assist.textContent='Opening your email app. Please send the message there to submit your request.';window.location.href='mailto:efrimaidan2@gmail.com?subject='+encodeURIComponent(msg.subject)+'&body='+encodeURIComponent(msg.body);});
+ document.getElementById('gmail').addEventListener('click',function(){if(!form.reportValidity())return;const msg=build();const url='https://mail.google.com/mail/?view=cm&fs=1&to=efrimaidan2%40gmail.com&su='+encodeURIComponent(msg.subject)+'&body='+encodeURIComponent(msg.body);assist.textContent='Opening a pre-filled Gmail draft. Please click Send in Gmail to submit your request.';window.open(url,'_blank','noopener,noreferrer');});
  document.getElementById('copy').addEventListener('click',async function(){if(!form.reportValidity())return;const msg=build();const content='To: efrimaidan2@gmail.com\nSubject: '+msg.subject+'\n\n'+msg.body;try{await navigator.clipboard.writeText(content);assist.textContent='Copied. Paste into an email and send it to submit your request.';}catch(e){assist.textContent='Copy unavailable in this browser; use the email button instead.';}});
 })();
 </script></body></html>
