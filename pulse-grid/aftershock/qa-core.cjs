@@ -41,4 +41,13 @@ test('Pit returns to checkpoint without destroying recovered sparks',()=>{const 
 test('Exit cannot finish before all three cells are recovered',()=>{const s=C.create(0);s.p.x=s.exit.x;s.p.z=s.exit.z;C.advance(s,1);assert.equal(s.won,false);});
 test('Launch count does not increment for canceled tiny drags',()=>{const s=C.create(0);assert.equal(C.launch(s,.01,.01),false);assert.equal(s.moves,0);});
 test('Randomized launch stress stays finite and inside arena bounds',()=>{let seed=191;const rnd=()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296);for(let l=0;l<3;l++){const s=C.create(l);for(let k=0;k<150;k++){C.launch(s,(rnd()-.5)*40,(rnd()-.5)*40);C.advance(s,1);for(const n of['x','y','z','vx','vy','vz'])assert.ok(Number.isFinite(s.p[n]));assert.ok(Math.abs(s.p.x)<=7.19);assert.ok(Math.abs(s.p.z)<=8.19);s.events=[];}}});
+test('Clockwork Room 4 completes via real player launches without using the pressure-plate shortcut',()=>{
+ const s=C.create(3);
+ const shots=[[-4.26,-3.51],[.39,-3.26],[4.51,-.66],[9.36,.03],[-1.17,-7.67],[6.54,1.87],[.34,-1.97],[-11.11,1.94],[0,-3.5]];
+ for(const [dx,dz] of shots){assert.equal(C.launch(s,dx,dz),true);C.advance(s,3.7);s.events=[];}
+ assert.equal(s.won,true,'Room 4 must be winnable by normal launches');
+ assert.equal(s.falls,0);
+ assert.ok(s.cells.every(c=>c.taken));
+ assert.equal(s.walls.find(w=>w.kind==='force').broken,false,'Outer route must remain a valid alternate solution');
+});
 require('node:fs').writeFileSync(require('node:path').join(__dirname,'qa-core-results.json'),JSON.stringify({results,traces},null,2));console.log(JSON.stringify({tests:results.length,results,solutions:traces.map(t=>({room:t.level+1,alternative:!!t.alternative,moves:t.moves,won:t.won}))},null,2));
