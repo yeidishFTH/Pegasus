@@ -1,8 +1,8 @@
-AFTERSHOCK — three-room browser review build
+AFTERSHOCK — four-room browser review build
 Build date: 2026-11-13
 
 Play index.html through an HTTP(S) static host. No build command or external library is required. All runtime assets are procedural or synthesized.
-Touch/mouse: pull backward anywhere on the game area; release to launch. The trajectory is shown before release. Land near a body dock to switch. Recover three sparks then reach the exit. PIP jumps rails; BOLT breaks glass with speed; FLUX attracts caged sparks.
+Touch/mouse: pull backward anywhere on the game area; release to launch. The trajectory is shown before release. Land near a body dock to switch. Recover three sparks then reach the exit. The fourth room adds a movable steel crate, magnetic attraction and a pressure switch unlocking a shortcut. PIP jumps rails; BOLT breaks glass with speed; FLUX attracts caged sparks.
 Keyboard: arrows adjust aim, Space/Enter launch; U undo; R restart; Escape pause.
 Audio is optional. Language and reduced motion are available in settings.
 
