@@ -62,6 +62,21 @@ assert.match(partners,/license-order\.html\?offer=source/,'partner offer must le
 assert.match(partners,/AI-assisted/,'disclose source provenance and rights constraints');
 assert.match(home,/paypal\.me\/DANEFFRIMK\/1USD/,'free game must show voluntary payment only');
 assert.ok(!/premium features included|pay.to.win bonus/i.test(home),'no paid advantage claims');
+// Protect six-room AFTERSHOCK's player-onboarding and earned sharing loop.
+const foundry=fs.readFileSync('pulse-grid/aftershock/foundry.html','utf8');
+assert.match(foundry,/<title>AFTERSHOCK FOUNDRY/, 'FOUNDRY must have its own browser title');
+assert.match(foundry,/last:0},storageOK=true;/, 'new players start in tutorial room 1, not room 4');
+assert.match(foundry,/save\.last\?\?0/, 'returning players resume from saved progress');
+assert.match(foundry,/invitedRoom\?\?save\.last/, 'shared room links must override resumed room');
+assert.match(foundry,/\^\[1-6\]\$/, 'only six valid room deep links are accepted');
+assert.match(foundry,/location\.origin\+location\.pathname\+'\?room='/, 'sharing must link to the actual challenge room');
+assert.match(fs.readFileSync('pulse-grid/arcade.html','utf8'),/href="\/aftershock\/foundry\.html"/, 'arcade must link to newest six-room build');
+for (const match of foundry.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)) {
+  if (/src\s*=/.test(match[1])) continue;
+  new vm.Script(match[2],{filename:'aftershock/foundry.html'});
+}
+console.log('PASS AFTERSHOCK six-room onboarding, room-sharing and script parse');
+
 const sitemap=fs.readFileSync('pulse-grid/sitemap.xml','utf8');
 for(const route of ['/','/arcade.html','/orbit.html','/partners.html','/license-order.html']){
   assert.ok(sitemap.includes('https://pulse-grid-arcade.onrender.com'+route+'</loc>'),'missing sitemap route '+route);
