@@ -1,14 +1,29 @@
-AFTERSHOCK — four-room browser review build
-Build date: 2026-11-13
+AFTERSHOCK / AFTERSHOCK FOUNDRY — browser release notes
+Last verified in source: 2026-11-14
 
-Play index.html through an HTTP(S) static host. No build command or external library is required. All runtime assets are procedural or synthesized.
-Touch/mouse: pull backward anywhere on the game area; release to launch. The trajectory is shown before release. Land near a body dock to switch. Recover three sparks then reach the exit. The fourth room adds a movable steel crate, magnetic attraction and a pressure switch unlocking a shortcut. PIP jumps rails; BOLT breaks glass with speed; FLUX attracts caged sparks.
-Keyboard: arrows adjust aim, Space/Enter launch; U undo; R restart; Escape pause.
-Audio is optional. Language and reduced motion are available in settings.
+CURRENT PUBLISHER DEMO (FOUNDRY)
+- Main playable URL: https://pulse-grid-arcade.onrender.com/aftershock/foundry.html?lang=en
+- Publisher evaluation: https://pulse-grid-arcade.onrender.com/aftershock/studio.html
+- Entry file: foundry.html. Standalone six-room physics game. No installation, account, build step, remote runtime asset or advertising SDK required.
+- Choose room in-game, or use ?room=1 through ?room=6 in the standalone demo.
+- The publisher's embedded iframe uses ?preview=1 for its preview-only entry experience. This flag is not a license or permission to re-host the file.
+- Three playable bodies: PIP spring, BOLT steel, FLUX magnet. Launch by pulling back and releasing; swap bodies and interact with weights, bridges, glass, conveyors and dominoes.
+- Keyboard: arrows to aim, Space to launch, number keys 1/2/3 for bodies, E for magnet pulse, Q for pull/push, Z for undo, R to restart, Escape to pause. Touch/mouse gestures are supported.
+- English and Hebrew, optional synthesized audio, local progress and reduced-motion preferences. No mandatory payment and no player account.
 
-Evaluation only. Commercial hosting, redistribution, ads, exclusivity, term, pricing and payment must be separately agreed in writing. AI assistance is disclosed. No blanket guarantee of exclusive rights in AI-generated material. No unrelated project/repository content is included.
+OLDER MODULAR PROTOTYPE (SEPARATE)
+- index.html + engine.js + scene.js + app.js + style.css are an earlier FOUR-room variant with different physics and visuals. Do not substitute this for the six-room FOUNDRY publisher demo.
+- The original deterministic tests in qa-core.cjs apply to that four-room modular prototype, not to all six rooms in foundry.html.
 
-QA: Deterministic physics checks cover crate collisions, magnetic attraction, switch and gate activation, and undo; simulated complete solutions have been validated for rooms 1–3, including an alternative route. Room 4 now also has a validated nine-launch win route using real physics and collecting all three sparks without opening the central shortcut; its separate switch-and-gate mechanics have deterministic tests. Earlier Chromium/mobile-emulation checks covered the three-room build. Physical mobile devices and the hardware WebGL path have NOT been validated here. Software-rendered fallback was tested. No customer or payment is verified by this build.
+VERIFICATION
+- node qa-foundry.cjs: extracts the REAL standalone foundry.html physics model and exercises six-room content, launch validation, finite-state stability, independent snapshots, magnetic switch/bridge activation, conveyor force and physically propagated domino chain / gate relay.
+- node qa-core.cjs: checks the separate earlier modular four-room engine including real launch routes for rooms 1–4.
+- GitHub Actions pulse-arcade.yml runs both test suites. Passing checks do not establish that every puzzle solution works on every device.
+- No claim of a full physical-device matrix or live-browser/WebGL certification is made. Individual publisher SDKs, network ad integrations and platform-specific telemetry have not been authorized or enabled in this public demo.
 
-Runtime files: index.html, engine.js, scene.js, app.js, style.css, studio.html.
-Contact: efrimaidan2@gmail.com
+COMMERCIAL STATUS AND RIGHTS
+- Free browser evaluation does NOT grant hosting, mirroring, monetization, sublicensing, source-code ownership, exclusivity or redistribution rights. The six-room publisher pilot shown on the site is only a proposed offer, not an accepted contract or automatic checkout.
+- Usage rights, permitted domains, duration, files, third-party rights, AI-assisted provenance, price and delivery must be confirmed in writing BEFORE payment; only the agreed transferable title-specific materials can be supplied after successful payment is verified in the developer's own account.
+- The game was created with substantial AI assistance. No blanket guarantee of exclusive rights over AI-generated content, or of verified sales, traffic, external acceptance or payouts.
+- Never sell or disclose unrelated Pegasus repository files, GitHub access, developer accounts, credentials, or RE:GENESIS.
+- Commercial inquiry: https://pulse-grid-arcade.onrender.com/license-order.html?offer=aftershock
