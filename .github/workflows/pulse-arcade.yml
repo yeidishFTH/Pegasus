@@ -25,3 +25,5 @@ jobs:
         run: node pulse-grid/aftershock/qa-foundry.cjs
       - name: Verify publisher review ZIP integrity and runnable scripts
         run: python3 pulse-grid/verify_packs.py
+      - name: Verify isolated private source-sale bundles without publishing them
+        run: python3 pulse-grid/build_private_source_packs.py --self-test
