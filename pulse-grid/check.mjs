@@ -65,6 +65,24 @@ assert.ok(!/premium features included|pay.to.win bonus/i.test(home),'no paid adv
 // Protect six-room AFTERSHOCK's player-onboarding and earned sharing loop.
 const foundry=fs.readFileSync('pulse-grid/aftershock/foundry.html','utf8');
 assert.match(foundry,/<title>AFTERSHOCK FOUNDRY/, 'FOUNDRY must have its own browser title');
+
+const languageInit=foundry.match(/const initialLanguage=[\s\S]*?(?=\nsave\.stars=Array\.from)/);
+assert.ok(languageInit, 'FOUNDRY language initializer must be present');
+function languageFor(browserLanguage,savedLanguage,query='') {
+  const sandbox={
+    navigator:{language:browserLanguage},matchMedia:()=>({matches:false}),
+    localStorage:{getItem:()=>savedLanguage?JSON.stringify({settings:{lang:savedLanguage}}):null},
+    location:{search:query},URLSearchParams
+  };
+  return vm.runInNewContext(languageInit[0]+'\nsettings.lang;',sandbox);
+}
+assert.equal(languageFor('en-US',null),'en','international first-time players should see English');
+assert.equal(languageFor('he-IL',null),'he','Hebrew browsers should see Hebrew');
+assert.equal(languageFor('fr-FR',null),'en','unsupported locales should fall back to English');
+assert.equal(languageFor('en-US','he'),'he','returning players keep their language choice');
+assert.equal(languageFor('he-IL','en','?lang=he'),'he','explicit Hebrew review links override storage');
+assert.equal(languageFor('en-US','he','?lang=en'),'en','explicit English publisher links override storage');
+
 assert.match(foundry,/last:0},storageOK=true;/, 'new players start in tutorial room 1, not room 4');
 assert.match(foundry,/save\.last\?\?0/, 'returning players resume from saved progress');
 assert.match(foundry,/invitedRoom\?\?save\.last/, 'shared room links must override resumed room');
