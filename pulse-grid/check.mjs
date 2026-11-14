@@ -47,6 +47,8 @@ const partners=fs.readFileSync('pulse-grid/partners.html','utf8');
 const order=fs.readFileSync('pulse-grid/license-order.html','utf8');
 assert.match(home,/id="start"/,'PULSE GRID needs PLAY NOW');
 assert.match(home,/id="invite"/,'PULSE GRID needs friend invite');
+assert.match(home,/href="\/aftershock\/foundry\.html\?lang=en"/,'home must directly expose the newer playable six-room AFTERSHOCK');
+assert.match(home,/href="\/aftershock\/studio\.html#pilot"/,'home publisher inquiry must use the existing canonical AFTERSHOCK terms');
 assert.match(home,/supportOverlay/,'PULSE GRID needs voluntary support after game over');
 assert.match(home,/visibilitychange/,'PULSE GRID should pause when backgrounded');
 assert.match(orbit,/visibilitychange/,'PULSE ORBIT should pause when backgrounded');
