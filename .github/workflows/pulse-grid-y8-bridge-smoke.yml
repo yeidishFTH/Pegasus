@@ -1,0 +1,20 @@
+name: PULSE Y8 isolated bridge smoke
+on:
+  push:
+    branches:
+      - pulse-grid-y8-staging-20261111
+    paths:
+      - 'pulse-grid/y8-bridge.js'
+      - 'pulse-grid/index.html'
+      - 'pulse-grid/tests/y8-bridge-smoke.mjs'
+      - '.github/workflows/pulse-grid-y8-bridge-smoke.yml'
+  workflow_dispatch:
+jobs:
+  y8-bridge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exercise Y8 SDK readiness and fail-open behavior
+        run: node pulse-grid/tests/y8-bridge-smoke.mjs
