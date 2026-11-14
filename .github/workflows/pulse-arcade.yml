@@ -19,5 +19,7 @@ jobs:
         run: node pulse-grid/check.mjs
       - name: Verify AFTERSHOCK deterministic gameplay and clockwork crate physics
         run: node pulse-grid/aftershock/qa-core.cjs
+      - name: Validate AFTERSHOCK FOUNDRY six-room physics and machinery
+        run: node pulse-grid/aftershock/qa-foundry.cjs
       - name: Verify publisher review ZIP integrity and runnable scripts
         run: python3 pulse-grid/verify_packs.py
