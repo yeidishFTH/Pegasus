@@ -77,6 +77,8 @@ for (const [i, level] of LEVELS.entries()) {
   for(let i=0;i<540;i++) Phys.step(s, 1/120);
   assert.ok(s.dominoes.some(d=>d.fall>.25), 'Physical collision must topple at least one domino');
   assert.ok(s.dominoes.filter(d=>d.fall>.25).length>1, 'Falling dominoes must transmit a chain reaction');
+  assert.equal(s.chainTriggered, true, 'Falling domino chain must reach the physical relay');
+  assert.equal(s.gateOpen, true, 'Relay must unlock the room 6 gate');
   checkFinite(s);
 }
 console.log('PASS AFTERSHOCK FOUNDRY: 6-room simulation + steel, magnet bridge, conveyor, domino chain and no auto-win');
