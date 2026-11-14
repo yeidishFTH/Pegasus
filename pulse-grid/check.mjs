@@ -92,6 +92,12 @@ assert.match(foundry,/\^\[1-6\]\$/, 'only six valid room deep links are accepted
 assert.match(foundry,/location\.origin\+location\.pathname\+'\?room='/, 'sharing must link to the actual challenge room');
 assert.match(fs.readFileSync('pulse-grid/arcade.html','utf8'),/href="\/aftershock\/foundry\.html"/, 'arcade must link to newest six-room build');
 for (const match of foundry.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)) {
+  // Structured-data JSON is valid JSON, not executable JavaScript.
+  // Validate it as JSON so SEO metadata cannot silently become malformed.
+  if (/type\s*=\s*["']application\/ld\+json/i.test(match[1])) {
+    JSON.parse(match[2]);
+    continue;
+  }
   if (/src\s*=/.test(match[1])) continue;
   new vm.Script(match[2],{filename:'aftershock/foundry.html'});
 }
