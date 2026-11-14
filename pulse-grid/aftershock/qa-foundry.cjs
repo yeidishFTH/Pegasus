@@ -29,7 +29,7 @@ function checkFinite(s) {
 }
 for (const [i, level] of LEVELS.entries()) {
   assert.equal(level.bodies.length, 3, 'Room ' + (i+1) + ' must have three playable bodies');
-  assert.deepEqual(level.bodies.map(x => x[0]), ['spring','steel','magnet'],
+  assert.equal(level.bodies.map(x => x[0]).join(','), 'spring,steel,magnet',
     'Room ' + (i+1) + ' missing body type');
   assert.equal(level.cores.length, 3, 'Room ' + (i+1) + ' must have three objective cores');
   assert.equal(level.exit.length, 2);
