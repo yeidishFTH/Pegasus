@@ -82,3 +82,51 @@ for (const [i, level] of LEVELS.entries()) {
   checkFinite(s);
 }
 console.log('PASS AFTERSHOCK FOUNDRY: 6-room simulation + steel, magnet bridge, conveyor, domino chain and no auto-win');
+
+ 
+// Execute the real share handler in a mobile-browser mock. Sharing is always
+// initiated by the player's button, never by page load or an automated post.
+async function testSharing() {
+  const begin=html.indexOf('async function shareResult(){');
+  const end=html.indexOf('\nfunction processEvents()',begin);
+  assert.ok(begin>=0 && end>begin,'AFTERSHOCK share handler must exist');
+  const shareScript=html.slice(begin,end)+'\nshareResult()';
+  function fixture(lang, shareMode) {
+    const observed={shared:null,copied:null,toasts:[]};
+    const nav={
+      clipboard:{async writeText(value){observed.copied=value;}}
+    };
+    if(shareMode!=='unavailable')nav.share=async value=>{
+      if(shareMode==='cancel')throw Object.assign(new Error('User dismissed share'),{name:'AbortError'});
+      if(shareMode==='blocked')throw new Error('Web Share not permitted');
+      observed.shared=value;
+    };
+    const ctx={
+      navigator:nav,location:{protocol:'https:',origin:'https://pulse-grid-arcade.onrender.com',pathname:'/aftershock/foundry.html'},
+      settings:{lang},state:{index:1,shots:7,bonus:{collected:true}},
+      LEVELS,score:()=>3,t:key=>key,toast:value=>observed.toasts.push(value)
+    };
+    return {observed,execute:()=>vm.runInNewContext(shareScript,ctx,{timeout:1500})};
+  }
+  const english=fixture('en','success');await english.execute();
+  assert.match(english.observed.shared.text,/7 launches/);
+  assert.match(english.observed.shared.text,/secret spark found/);
+  assert.ok(english.observed.shared.title.includes(LEVELS[1].name[0]));
+  assert.equal(english.observed.shared.url,'https://pulse-grid-arcade.onrender.com/aftershock/foundry.html?room=2');
+  assert.equal(english.observed.copied,null,'Successful native share must not also copy');
+  const hebrew=fixture('he','success');await hebrew.execute();
+  assert.ok(hebrew.observed.shared.text.includes(LEVELS[1].name[1]),'Hebrew share must name the actual room in Hebrew');
+  assert.match(hebrew.observed.shared.text,/7 שיגורים/);
+  const desktop=fixture('en','unavailable');await desktop.execute();
+  assert.match(desktop.observed.copied,/\?room=2/);
+  assert.deepEqual(desktop.observed.toasts,['copied']);
+  const canceled=fixture('en','cancel');await canceled.execute();
+  assert.equal(canceled.observed.copied,null,'Canceling share must not force clipboard');
+  assert.deepEqual(canceled.observed.toasts,[]);
+  const blocked=fixture('he','blocked');await blocked.execute();
+  assert.match(blocked.observed.copied,/7 שיגורים/,'Rejected native sharing should fall back to copy');
+  assert.ok(html.includes('playable six-room browser prologue'));
+  assert.ok(html.includes('פרולוג משחקי בן שש זירות'));
+  console.log('PASS AFTERSHOCK result sharing: bilingual native share, user cancellation and clipboard fallback');
+}
+testSharing().catch(error=>{console.error(error);process.exitCode=1;});
