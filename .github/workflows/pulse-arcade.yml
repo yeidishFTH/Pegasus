@@ -17,6 +17,8 @@ jobs:
           node-version: '22'
       - name: Verify browser game scripts, assets and site structure
         run: node pulse-grid/check.mjs
+      - name: Verify licensing inquiry, PayPal offer gating and individual buyer paths
+        run: node pulse-grid/license-order-smoke.mjs
       - name: Verify AFTERSHOCK deterministic gameplay and clockwork crate physics
         run: node pulse-grid/aftershock/qa-core.cjs
       - name: Validate AFTERSHOCK FOUNDRY six-room physics and machinery
