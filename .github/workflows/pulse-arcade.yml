@@ -7,9 +7,16 @@ on:
       - '.github/workflows/pulse-arcade.yml'
   workflow_dispatch:
 
+# When quick successive commits land, test the newest version rather than charging
+# extra runner minutes for superseded revisions.
+concurrency:
+  group: pulse-arcade-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
